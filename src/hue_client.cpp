@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "hue_client.h"
 #include "global.h"
@@ -32,16 +33,17 @@ bool hue_client_t::connect(void)
 {
 	struct hostent* host = NULL;
 	struct sockaddr_in sin;
+	int flags = 0;
 
 	if (NULL == (host = gethostbyname(this->_ip)))
 	{
-		NYX_ERRLOG("[!] Can't resolv %s\n", this->_ip);
+		NYX_ERRLOG("[!] Failed to resolv %s\n", this->_ip);
 		return false;
 	}
 
 	if (-1 == (this->_socket = ::socket(AF_INET, SOCK_STREAM, 0)))
 	{
-		NYX_ERRLOG("[!] Unable to create socket\n");
+		NYX_ERRLOG("[!] Failed to create socket\n");
 		return false;
 	}
 	memset(&sin, 0x00, sizeof(sin));
@@ -49,10 +51,21 @@ bool hue_client_t::connect(void)
 	memcpy((char*)&sin.sin_addr, host->h_addr, host->h_length);
 	sin.sin_port = htons(80);
 
+	// Set socket to non-blocking
+	if (-1 == (flags = fcntl(this->_socket, F_GETFL, 0)))
+	{
+		NYX_ERRLOG("[!] Failed to get socket flags\n");
+		return false;
+	}
+	if (-1 == fcntl(this->_socket, F_SETFL, flags | O_NONBLOCK))
+	{
+		NYX_ERRLOG("[!] Failed to set socket to non-blocking\n");
+		return false;
+	}
+
 	if (-1 == ::connect(this->_socket, (struct sockaddr*)&sin, sizeof(sin)))
 	{
-		NYX_ERRLOG("[!] Unable to connect to %s:80\n", this->_ip);
-		this->close();
+		NYX_ERRLOG("[!] Failed to connect to %s:80\n", this->_ip);
 		return false;
 	}
 
