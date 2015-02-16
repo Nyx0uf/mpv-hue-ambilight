@@ -1,5 +1,5 @@
 /*
-clang++ -o ambi.dylib -dynamiclib ambi.cpp rgb_pixel.cpp hue_client.cpp filterutils.cpp hue_controller.cpp -std=c++11 -Wall -Wextra -O3 -march=native -mtune=native -ffast-math -fPIC -shared -flto -lswscale -lavcodec -lavutil (-DDEBUG)
+g++ -o ambi.dylib -dynamiclib ambi.cpp rgb_pixel.cpp hue_client.cpp filterutils.cpp hue_controller.cpp -std=c++11 -Wall -Wextra -O3 -march=native -mtune=native -ffast-math -fPIC -shared -flto -lswscale -lavcodec -lavutil (-DDEBUG)
 */
 
 #include <cstdlib>
@@ -37,7 +37,9 @@ typedef struct _nyx_ambi_struct {
 } ambi_t;
 
 
+#ifdef DEBUG
 static void save_frame(const AVFrame* frame, const int width, const int height, const int frame_n);
+#endif
 
 
 static int nyx_ambi_init(struct vf_dlopen_context* ctx)
@@ -125,6 +127,7 @@ int vf_dlopen_getcontext(struct vf_dlopen_context* ctx, int argc __attribute__((
 	return 1;
 }
 
+#ifdef DEBUG
 __attribute__((unused)) void save_frame(const AVFrame* frame, const int width, const int height, const int frame_n)
 {
 	FILE* fp = NULL;
@@ -146,3 +149,4 @@ __attribute__((unused)) void save_frame(const AVFrame* frame, const int width, c
 	// Close file
 	fclose(fp);
 }
+#endif
