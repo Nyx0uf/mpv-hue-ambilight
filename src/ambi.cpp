@@ -1,7 +1,3 @@
-/*
-g++ -o ambi.dylib -dynamiclib ambi.cpp rgb_pixel.cpp hue_client.cpp filterutils.cpp hue_controller.cpp -std=c++11 -Wall -Wextra -O3 -march=native -mtune=native -ffast-math -fPIC -shared -flto -lswscale -lavcodec -lavutil (-DDEBUG)
-*/
-
 #include <cstdlib>
 
 #ifdef __cplusplus
@@ -29,7 +25,6 @@ extern "C" {
 
 
 typedef struct _nyx_ambi_struct {
-	char* hue_ip;
 	int frame_step;
 	hue_controller_t* hue;
 	struct SwsContext* sws_ctx;
@@ -57,7 +52,6 @@ void nyx_ambi_uninit(struct vf_dlopen_context* ctx)
 {
 	ambi_t* ambi = (ambi_t*)ctx->priv;
 
-	//free(ambi->hue_ip);
 	delete ambi->hue;
 	avpicture_free(&ambi->picture);
 	sws_freeContext(ambi->sws_ctx);
@@ -77,7 +71,6 @@ static int nyx_ambi_init_put_image(struct vf_dlopen_context* ctx)
 		int linesize[3] = {ctx->inpic.planestride[0], ctx->inpic.planestride[1], ctx->inpic.planestride[2]};
 		sws_scale(ambi->sws_ctx, data, linesize, 0, ctx->in_height, picture.data, picture.linesize);
 
-		//apply_dominant_color_from_buffer(picture.data[0], ctx->in_width, ctx->in_height);
 		ambi->hue->apply_dominant_color_from_buffer(picture.data[0], ctx->in_width, ctx->in_height);
 
 		//save_frame((AVFrame*)&picture, ctx->in_width, ctx->in_height, ambi->nb);
@@ -107,9 +100,6 @@ int vf_dlopen_getcontext(struct vf_dlopen_context* ctx, int argc __attribute__((
 	}
 
 	ambi_t* ambi = (ambi_t*)calloc(1, sizeof(ambi_t));
-	//ambi->hue_ip = (char*)calloc(strlen(*argv) + 1, sizeof(char));
-	//memcpy(ambi->hue_ip, *argv, strlen(*argv));
-	
 	ambi->hue = new hue_controller_t(*argv);
 
 	static struct vf_dlopen_formatpair map[] = {
