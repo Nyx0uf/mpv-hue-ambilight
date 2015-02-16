@@ -20,4 +20,7 @@
 /* Swap */
 #define NYX_SWAP(__TYPE, A, B) do { __TYPE SWAP_TMP = B; B = A; A = SWAP_TMP; } while (0)
 
+/* Not a Number check */
+#define NYX_IS_NAN(NUM) (((double)NUM) != ((double)NUM))
+
 #endif /* __NYX_GLOBAL_H__ */
