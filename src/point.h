@@ -10,9 +10,11 @@ struct point_t
 	double y;
 
 	/// Default constructor
-	point_t(void) {x = 0.0; y = 0.0;}
+	point_t(void);
 	/// Constructor
-	point_t(const double xx, const double yy) {x = xx; y = yy;}
+	point_t(const double xx, const double yy);
+	/// Copy constructor
+	point_t(const point_t& pt);
 
 	/// Operators overloading
 	inline bool operator==(const point_t& pt)const
