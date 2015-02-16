@@ -9,14 +9,27 @@ struct point_t
 	/// Y pos
 	double y;
 
-	/// Default constructor
+	/**
+	 * @brief Default constructor: x = 0.0, y = 0.0
+	 */
 	point_t(void);
-	/// Constructor
+
+	/**
+	 * @brief Initialize a point
+	 * @param xx [in] : X position
+	 * @param yy [in] : Y position
+	 */
 	point_t(const double xx, const double yy);
-	/// Copy constructor
+
+	/**
+	 * @brief Create a copy of another point
+	 * @param pt [in] : Point to copy
+	 */
 	point_t(const point_t& pt);
 
-	/// Operators overloading
+	/**
+	 * Operators overloading
+	 */
 	inline bool operator==(const point_t& pt)const
 	{
 		return ((x == pt.x) && (y == pt.y));

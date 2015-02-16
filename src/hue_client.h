@@ -11,17 +11,32 @@ private:
 	int _socket;
 
 public:
-	/// Constructor
+	/**
+	 * @brief Initialize hue client
+	 * @param ip [in] : Philips hue bridge IP
+	 */
 	hue_client_t(const char* ip);
-	/// Destructor
+
+	/**
+	 * @brief Destructor, close socket and free ip
+	 */
 	~hue_client_t(void);
 
-	/// Connect the socket
+	/**
+	 * @brief Connect the socket
+	 * @returns true if the socket successfully connected to the hue bridge
+	 */
 	bool connect(void);
-	/// Close the socket
+
+	/**
+	 * @brief Close the socket
+	 */
 	void close(void);
 
-	/// Send a JSON string to the hue
+	/**
+	 * @brief 
+	 * @param json [in] : Send the JSON string to the hue
+	 */
 	void send_command(const char* json)const;
 };
 

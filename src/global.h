@@ -2,14 +2,13 @@
 #define __NYX_GLOBAL_H__
 
 
-/* Error log macro */
+/* Logging macros */
 #ifdef DEBUG
 #define NYX_DLOG(...) fprintf(stdout, __VA_ARGS__)
 #else
 #define NYX_DLOG(...) ((void)0)
 #define NDEBUG
 #endif /* DEBUG */
-
 #define NYX_ERRLOG(...) fprintf(stderr, __VA_ARGS__)
 
 /* Returns the lower value */
