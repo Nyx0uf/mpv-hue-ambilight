@@ -12,12 +12,13 @@ I chose this because ideally I'd get colors from both edges and light 2 lamps bu
 
 ### Building
 
-I only tried on OS X 10.10 :
+I only tried on OS X 10.10 (g++ is an alias to clang++):
 
-	clang++ -o ambi.dylib -dynamiclib ambi.cpp rgb_pixel.cpp hue_client.cpp filterutils.cpp hue_controller.cpp -std=c++11 -Wall -Wextra -O3 -march=native -mtune=native -ffast-math -fPIC -shared -flto -lswscale -lavcodec -lavutil
+	g++ -o ambi.dylib -dynamiclib src/ambi.cpp src/rgb_pixel.cpp src/hue_client.cpp src/filterutils.cpp src/hue_controller.cpp -std=c++11 -Wall -Wextra -O3 -march=native -mtune=native -ffast-math -fPIC -shared -flto -lswscale -lavcodec -lavutil
 
 Building on Linux should be failry simple though and pretty much looks the same.
-Building on Windows is not supported.
+
+You can execute the `build.sh` script which will build the library.
 
 
 ### Usage
