@@ -28,6 +28,14 @@ struct point_t
 	point_t(const point_t& pt);
 
 	/**
+	 * @brief Calculate the distance between two points
+	 * @param pt1 [in] : Point 1
+	 * @param pt2 [in] : Point 2
+	 * @returns distance
+ 	*/
+	static double distance_between_points(const point_t& pt1, const point_t& pt2);
+
+	/**
 	 * Operators overloading
 	 */
 	inline bool operator==(const point_t& pt)const
