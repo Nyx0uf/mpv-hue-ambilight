@@ -88,6 +88,9 @@ void hue_client_t::send_command(const char* json)const
 	 * /api/newdeveloper/lights/3/state
 	 * {"on":true, "transitiontime":5, "sat":255, "bri":255,"xy":[1.0,0.3154]}
 	 */
+	if (!this->is_connected())
+		return;
+
 	char buffer[NYX_BUFSIZ] = {0x00};
 	sprintf(buffer, "PUT /api/newdeveloper/lights/1/state HTTP/1.1\r\nHost:%s\r\nContent-type:application/json\r\nContent-Length:%lu\r\n\n%s", this->_ip, strlen(json), json);
 	send(this->_socket, buffer, strlen(buffer), 0);

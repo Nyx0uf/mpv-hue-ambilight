@@ -34,6 +34,12 @@ public:
 	void close(void);
 
 	/**
+	 * @brief Connect the socket
+	 * @returns true if the socket successfully connected to the hue bridge
+	 */
+	inline bool is_connected(void)const {return (this->_socket != -1);}
+
+	/**
 	 * @brief 
 	 * @param json [in] : Send the JSON string to the hue
 	 */
