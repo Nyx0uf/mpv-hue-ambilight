@@ -79,7 +79,7 @@ namespace std
 	{
 		inline size_t operator()(const rgb_pixel_t& px)const
 		{
-			return (uint32_t(px.r << 16) | uint32_t(px.g << 8) | uint32_t(px.b));
+			return (size_t(px.r << 16) | size_t(px.g << 8) | size_t(px.b));
 		}
 	};
 }
