@@ -5,9 +5,7 @@ This is a plugin for [mpv](https://github.com/mpv-player/mpv "mpv on github") to
 
 It is written in *C++11*, why ? because I needed some handy containers like unordered sets.
 
-The algorithm is trivial (dumb, even) and could surely be improved. The color is computed from the 8 columns of pixels on the left edge.
-
-I chose this because ideally I'd get colors from both edges and light 2 lamps but I only have one at the moment…
+The algorithm is trivial (dumb, even) and could surely be improved. The color is computed from the 8 columns of pixels on the left and right edge.
 
 
 ### Building
@@ -32,8 +30,7 @@ Then, simply invoke mpv with `--vf=dlopen=ambi.dylib:HUE_IP_ADDRESS` for example
 
 ### Limitations
 
-- Only handles one lamp for the moment (I need to buy stuff to setup the remaining 2…)
-- Too slow for my taste (handle 1080p in my tests), perhaps I should try downscaling the image to 720p
+- Too slow for my taste (handle 1080p in my tests)
 - Won't build on Windows, but I don't care.
 - Too many things hardcoded?
 
