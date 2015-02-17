@@ -3,7 +3,7 @@
 FLAGS=""
 LIBNAME="ambi"
 
-if [ $1 == "debug" ]; then
+if [ "$1" == "debug" ]; then
 	FLAGS="-DDEBUG"
 fi
 
