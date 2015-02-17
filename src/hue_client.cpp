@@ -33,7 +33,7 @@ bool hue_client_t::connect(void)
 {
 	struct hostent* host = NULL;
 	struct sockaddr_in sin;
-	int flags = 0;
+	//int flags = 0;
 
 	if (NULL == (host = gethostbyname(this->_ip)))
 	{
@@ -51,8 +51,8 @@ bool hue_client_t::connect(void)
 	memcpy((char*)&sin.sin_addr, host->h_addr, host->h_length);
 	sin.sin_port = htons(80);
 
-	// Set socket to non-blocking
-	if (-1 == (flags = fcntl(this->_socket, F_GETFL, 0)))
+	// Set socket to non-blocking, doesn't seem to work.
+	/*if (-1 == (flags = fcntl(this->_socket, F_GETFL, 0)))
 	{
 		NYX_ERRLOG("[!] Failed to get socket flags\n");
 		return false;
@@ -61,7 +61,7 @@ bool hue_client_t::connect(void)
 	{
 		NYX_ERRLOG("[!] Failed to set socket to non-blocking\n");
 		return false;
-	}
+	}*/
 
 	if (-1 == ::connect(this->_socket, (struct sockaddr*)&sin, sizeof(sin)))
 	{
@@ -81,7 +81,7 @@ void hue_client_t::close(void)
 	}
 }
 
-void hue_client_t::send_command(const char* json)const
+void hue_client_t::send_command(const char* json, const uint8_t lamp_n)const
 {
 	/**
 	 * http://192.168.0.150/debug/clip.html
@@ -92,6 +92,6 @@ void hue_client_t::send_command(const char* json)const
 		return;
 
 	char buffer[NYX_BUFSIZ] = {0x00};
-	sprintf(buffer, "PUT /api/newdeveloper/lights/1/state HTTP/1.1\r\nHost:%s\r\nContent-type:application/json\r\nContent-Length:%lu\r\n\n%s", this->_ip, strlen(json), json);
+	sprintf(buffer, "PUT /api/newdeveloper/lights/%d/state HTTP/1.1\r\nHost:%s\r\nContent-type:application/json\r\nContent-Length:%lu\r\n\n%s", lamp_n, this->_ip, strlen(json), json);
 	send(this->_socket, buffer, strlen(buffer), 0);
 }

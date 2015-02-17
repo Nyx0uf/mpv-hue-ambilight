@@ -42,8 +42,9 @@ public:
 	/**
 	 * @brief 
 	 * @param json [in] : Send the JSON string to the hue
+	 * @param lamp_n [in] : Lamp number
 	 */
-	void send_command(const char* json)const;
+	void send_command(const char* json, const uint8_t lamp_n)const;
 };
 
 #endif /* __NYX_HUE_CLIENT_H__ */

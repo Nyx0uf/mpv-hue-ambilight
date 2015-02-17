@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include "hue_controller.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -6,7 +7,6 @@ extern "C" {
 
 #include "vf_dlopen.h"
 #include "filterutils.h"
-#include "hue_controller.h"
 #include "global.h"
 
 #include <libavcodec/avcodec.h>
@@ -89,18 +89,24 @@ static int nyx_ambi_init_put_image(struct vf_dlopen_context* ctx)
 	return 1;
 }
 
+/*
+--vf=dlopen=ambi.dylib:HUE_IP:NUMBER_OF_LAMPS
+1: IP of the Hue bridge
+2: Number of lamps
+*/
 int vf_dlopen_getcontext(struct vf_dlopen_context* ctx, int argc __attribute__((unused)), const char** argv __attribute__((unused)))
 {
 	VF_DLOPEN_CHECK_VERSION(ctx);
 
 	if (argc != 1)
 	{
-		NYX_ERRLOG("Usage:\n--vf=dlopen=ambi.dylib:HUE_IP\n");
+		NYX_ERRLOG("\nUsage:\n--vf=dlopen=ambi.dylib:HUE_IP\n\n");
 		return -1;
 	}
+	const char* ip = argv[0];
 
 	ambi_t* ambi = (ambi_t*)calloc(1, sizeof(ambi_t));
-	ambi->hue = new hue_controller_t(*argv);
+	ambi->hue = new hue_controller_t(ip, 3);
 
 	static struct vf_dlopen_formatpair map[] = {
 #define FORMAT(fmt,sz,xmul,ymul) {fmt, NULL},
