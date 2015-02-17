@@ -23,8 +23,12 @@ extern "C" {
     FORMAT("yuv420p",    1,     2,     2)
 
 
+#define NYX_MAX_WIDTH 1280
+
 
 typedef struct _nyx_ambi_struct {
+	size_t width;
+	size_t height;
 	int frame_step;
 	hue_controller_t* hue;
 	struct SwsContext* sws_ctx;
@@ -39,11 +43,26 @@ static void save_frame(const AVFrame* frame, const int width, const int height, 
 
 static int nyx_ambi_init(struct vf_dlopen_context* ctx)
 {
+	av_log_set_level(AV_LOG_QUIET);
+
 	ambi_t* ambi = (ambi_t*)ctx->priv;
 
 	ambi->frame_step = 0;
-	ambi->sws_ctx = sws_getContext(ctx->in_width, ctx->in_height, AV_PIX_FMT_YUV420P, ctx->in_width, ctx->in_height, AV_PIX_FMT_RGB24, 0, 0, 0, 0);
-	avpicture_alloc(&ambi->picture, AV_PIX_FMT_RGB24, ctx->in_width, ctx->in_height);
+
+	if (ctx->in_width > NYX_MAX_WIDTH)
+	{
+		ambi->width = NYX_MAX_WIDTH;
+		ambi->height = (size_t)(((double)ctx->in_height / (double)ctx->in_width) * NYX_MAX_WIDTH);
+	}
+	else
+	{
+		ambi->width = ctx->in_width;
+		ambi->height = ctx->in_height;
+	}
+	NYX_DLOG("\nimg size = %zu %zu\n", ambi->width, ambi->height);
+
+	ambi->sws_ctx = sws_getContext(ctx->in_width, ctx->in_height, AV_PIX_FMT_YUV420P, ambi->width, ambi->height, AV_PIX_FMT_RGB24, SWS_LANCZOS, NULL, NULL, NULL);
+	avpicture_alloc(&ambi->picture, AV_PIX_FMT_RGB24, ambi->width, ambi->height);
 
 	return 1;
 }
@@ -71,9 +90,9 @@ static int nyx_ambi_init_put_image(struct vf_dlopen_context* ctx)
 		int linesize[3] = {ctx->inpic.planestride[0], ctx->inpic.planestride[1], ctx->inpic.planestride[2]};
 		sws_scale(ambi->sws_ctx, data, linesize, 0, ctx->in_height, picture.data, picture.linesize);
 
-		ambi->hue->apply_dominant_color_from_buffer(picture.data[0], ctx->in_width, ctx->in_height);
+		ambi->hue->apply_dominant_color_from_buffer(picture.data[0], ambi->width, ambi->height);
 
-		//save_frame((AVFrame*)&picture, ctx->in_width, ctx->in_height, ambi->nb);
+		//save_frame((AVFrame*)&picture, ambi->width, ambi->height, ambi->nb);
 		ambi->frame_step = 0;
 	}
 
