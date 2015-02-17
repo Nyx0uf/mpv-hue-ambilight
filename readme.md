@@ -25,15 +25,15 @@ You can execute the `build.sh` script which will build the library.
 
 **mpv have to be built with the `--enable-vf-dlopen-filters` switch.**
 
-Then, simply invoke mpv with `--vf=dlopen=ambi.dylib:HUE_IP_ADDRESS`
+Then, simply invoke mpv with `--vf=dlopen=ambi.dylib:HUE_IP_ADDRESS` for example :
 
-	mpv movie --vf=dlopen=ambi.dylib:HUE_IP_ADDRESS
+	mpv movie --vf=dlopen=ambi.dylib:192.168.1.20
 
 
 ### Limitations
 
 - Only handles one lamp for the moment (I need to buy stuff to setup the remaining 2…)
-- Too slow for my taste (handle 1080p in my tests)
+- Too slow for my taste (handle 1080p in my tests), perhaps I should try downscaling the image to 720p
 - Won't build on Windows, but I don't care.
 - Too many things hardcoded?
 
