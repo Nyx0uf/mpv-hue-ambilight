@@ -59,7 +59,6 @@ static int nyx_ambi_init(struct vf_dlopen_context* ctx)
 		ambi->width = ctx->in_width;
 		ambi->height = ctx->in_height;
 	}
-	NYX_DLOG("\nimg size = %zu %zu\n", ambi->width, ambi->height);
 
 	ambi->sws_ctx = sws_getContext(ctx->in_width, ctx->in_height, AV_PIX_FMT_YUV420P, ambi->width, ambi->height, AV_PIX_FMT_RGB24, SWS_LANCZOS, NULL, NULL, NULL);
 	avpicture_alloc(&ambi->picture, AV_PIX_FMT_RGB24, ambi->width, ambi->height);
@@ -92,7 +91,7 @@ static int nyx_ambi_init_put_image(struct vf_dlopen_context* ctx)
 
 		ambi->hue->apply_dominant_color_from_buffer(picture.data[0], ambi->width, ambi->height);
 
-		//save_frame((AVFrame*)&picture, ambi->width, ambi->height, ambi->nb);
+		//save_frame((AVFrame*)&picture, ambi->width, ambi->height, ambi->frame_step);
 		ambi->frame_step = 0;
 	}
 
@@ -111,7 +110,6 @@ static int nyx_ambi_init_put_image(struct vf_dlopen_context* ctx)
 /*
 --vf=dlopen=ambi.dylib:HUE_IP:NUMBER_OF_LAMPS
 1: IP of the Hue bridge
-2: Number of lamps
 */
 int vf_dlopen_getcontext(struct vf_dlopen_context* ctx, int argc __attribute__((unused)), const char** argv __attribute__((unused)))
 {
