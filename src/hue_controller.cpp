@@ -42,6 +42,10 @@ void hue_controller_t::apply_dominant_color_from_buffer(const uint8_t* buffer, c
 	std::unordered_multiset<rgb_pixel_t> right_edge_colors;
 	this->get_right_edge(pixels, width, height, right_edge_colors, 8);
 
+	// Assuming:
+	// lamp 1 on the left
+	// lamp 2 on the right
+	// lamp 3 at the center
 	const int random_colors_threshold = (int)(height * COLOR_THRESHOLD_MIN_PERCENTAGE);
 	this->apply_color_to_lamp(left_edge_colors, random_colors_threshold, 1);
 	this->apply_color_to_lamp(right_edge_colors, random_colors_threshold, 2);
@@ -183,15 +187,13 @@ point_t hue_controller_t::calculate_XY_from_RGB_and_model(const rgb_pixel_t* px,
 		}
 
 		// Change the xy value to a value which is within the reach of the lamp.
-		//cx = closest_point.x;
-		//cy = closest_point.y;
 		free(color_points);
 		return closest_point;
 	}
 	else
 	{
 		free(color_points);
-		return xy_point; //point_t(cx, cy);
+		return xy_point;
 	}
 }
 
