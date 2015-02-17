@@ -43,12 +43,12 @@ void hue_controller_t::apply_dominant_color_from_buffer(const uint8_t* buffer, c
 	this->get_right_edge(pixels, width, height, right_edge_colors, 8);
 
 	// Assuming:
-	// lamp 1 on the left
-	// lamp 2 on the right
+	// lamp 1 on the right
+	// lamp 2 on the left
 	// lamp 3 at the center
 	const int random_colors_threshold = (int)(height * COLOR_THRESHOLD_MIN_PERCENTAGE);
-	this->apply_color_to_lamp(left_edge_colors, random_colors_threshold, 1);
-	this->apply_color_to_lamp(right_edge_colors, random_colors_threshold, 2);
+	this->apply_color_to_lamp(left_edge_colors, random_colors_threshold, 2);
+	this->apply_color_to_lamp(right_edge_colors, random_colors_threshold, 1);
 }
 
 void hue_controller_t::get_left_edge(rgb_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgb_pixel_t>& edge, const size_t col)const
