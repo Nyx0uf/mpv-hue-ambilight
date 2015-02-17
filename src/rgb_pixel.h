@@ -16,29 +16,62 @@
 
 struct rgb_pixel_t
 {
-	/// Red
+	/// Red component
 	uint8_t r;
-	/// Green
+	/// Green component
 	uint8_t g;
-	/// Blue
+	/// Blue component
 	uint8_t b;
 
-	/// Default constructor (black pixel)
-	rgb_pixel_t(void) {r = NYX_MIN_PIXEL_COMPONENT_VALUE; g = NYX_MIN_PIXEL_COMPONENT_VALUE; b = NYX_MIN_PIXEL_COMPONENT_VALUE;}
-	/// Constructor
-	rgb_pixel_t(const uint8_t red, const uint8_t green, const uint8_t blue) {r = red; g = green; b = blue;}
+	/**
+	 * @brief Default constructor: Initialize a black pixel
+	 */
+	rgb_pixel_t(void);
 
+	/**
+	 * @brief Initialize a pixel
+	 * @param red [in] : red component
+	 * @param green [in] : green component
+	 * @param blue [in] : blue component
+	 */
+	rgb_pixel_t(const uint8_t red, const uint8_t green, const uint8_t blue);
+
+	/**
+	 * @brief Create a copy of another pixel
+	 * @param px [in] : Pixel to copy
+	 */
+	rgb_pixel_t(const rgb_pixel_t& px);
+
+	/**
+	 * @brief Check if a pixel is black
+	 * @returns true if the pixel is black
+	 */
 	inline bool is_black(void)const {return (r == NYX_MIN_PIXEL_COMPONENT_VALUE && g == NYX_MIN_PIXEL_COMPONENT_VALUE && b == NYX_MIN_PIXEL_COMPONENT_VALUE);}
+
+	/**
+	 * @brief Check if a pixel is white
+	 * @returns true if the pixel is white
+	 */
 	inline bool is_white(void)const {return (r == NYX_MAX_PIXEL_COMPONENT_VALUE && g == NYX_MAX_PIXEL_COMPONENT_VALUE && b == NYX_MAX_PIXEL_COMPONENT_VALUE);}
+
+	/**
+	 * @brief Check if a pixel is dark
+	 * @returns true if the pixel is dark
+	 */
 	bool is_dark(void)const;
 
-	// Operators overloading
+	/**
+	 * Operators overloading
+	 */
 	inline bool operator==(const rgb_pixel_t& px)const
 	{
 		return ((r == px.r) && (g == px.g) && (b == px.b));
 	}
 };
 
+/**
+ * std::hash overloading
+ */
 namespace std
 {
 	template <>
@@ -46,9 +79,15 @@ namespace std
 	{
 		inline size_t operator()(const rgb_pixel_t& px)const
 		{
-			return (uint64_t(px.r << 16) | uint64_t(px.g << 8) | uint64_t(px.b));
+			return (uint32_t(px.r << 16) | uint32_t(px.g << 8) | uint32_t(px.b));
 		}
 	};
 }
+
+
+/**
+ * Normalized pixel component values, uint8_t -> double (0.0 -> 1.0)
+ */
+extern double __normalized_component_values[256];
 
 #endif /* __NYX_RGB_PIXEL_H__ */
