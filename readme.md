@@ -7,16 +7,12 @@ It is written in *C++11*, why ? because I needed some handy containers like unor
 
 The algorithm is trivial (dumb, even) and could surely be improved. The color is computed from the 8 columns of pixels on the left and right edge.
 
+You need ffmpeg to be installed, but that's not a problem since you already use mpv.
+
 
 ### Building
 
-I only tried on OS X 10.10 (g++ is an alias to clang++):
-
-	g++ -o ambi.dylib -dynamiclib src/ambi.cpp src/rgb_pixel.cpp src/hue_client.cpp src/filterutils.cpp src/hue_controller.cpp -std=c++11 -Wall -Wextra -O3 -march=native -mtune=native -ffast-math -fPIC -shared -flto -lswscale -lavcodec -lavutil
-
-Building on Linux should be failry simple though and pretty much looks the same.
-
-You can execute the `build.sh` script which will build the library.
+I only tried on OS X 10.10 but building on Linux should be the same, just execute the `build.sh` script.
 
 
 ### Usage
