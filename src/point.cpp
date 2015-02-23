@@ -20,6 +20,13 @@ point_t::point_t(const point_t& pt)
 	this->y = pt.y;
 }
 
+double point_t::distance_from_point(const point_t& pt)
+{
+	const double dx = this->x - pt.x; // horizontal difference
+	const double dy = this->y - pt.y; // vertical difference
+	return std::sqrt(dx * dx + dy * dy);
+}
+
 double point_t::distance_between_points(const point_t& pt1, const point_t& pt2)
 {
 	const double dx = pt1.x - pt2.x; // horizontal difference

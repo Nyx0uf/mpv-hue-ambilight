@@ -1,21 +1,24 @@
 #include <cstdlib>
 #include "hue_controller.h"
+#include "img_formats.h"
+
+
+#ifdef NYX_USE_OPENCL
+#include "cl_global.h" 
+#endif /* NYX_USE_OPENCL */
+
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 #include "vf_dlopen.h"
 #include "filterutils.h"
-#include "global.h"
-
-#include <libavcodec/avcodec.h>
-#include <libswscale/swscale.h>
-#include <libavutil/avutil.h>
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
+
 
 #define ALLFORMATS \
     /*     format    bytes   xmul   ymul */ \
@@ -27,41 +30,27 @@ extern "C" {
 
 
 typedef struct _nyx_ambi_struct {
-	size_t width;
-	size_t height;
 	int frame_step;
 	hue_controller_t* hue;
-	struct SwsContext* sws_ctx;
-	AVPicture picture;
+	img_format_t* img;
 } ambi_t;
-
-
-#ifdef DEBUG
-static void save_frame(const AVFrame* frame, const int width, const int height, const int frame_n);
-#endif
 
 
 static int nyx_ambi_init(struct vf_dlopen_context* ctx)
 {
+#ifdef NYX_USE_FFMPEG
 	av_log_set_level(AV_LOG_QUIET);
+#endif /* NYX_USE_FFMPEG */
+
+#ifdef NYX_USE_OPENCL
+	nyx_cl_init();
+#endif /* NYX_USE_OPENCL */
 
 	ambi_t* ambi = (ambi_t*)ctx->priv;
 
 	ambi->frame_step = 0;
 
-	if (ctx->in_width > NYX_MAX_WIDTH)
-	{
-		ambi->width = NYX_MAX_WIDTH;
-		ambi->height = (size_t)(((double)ctx->in_height / (double)ctx->in_width) * NYX_MAX_WIDTH);
-	}
-	else
-	{
-		ambi->width = ctx->in_width;
-		ambi->height = ctx->in_height;
-	}
-
-	ambi->sws_ctx = sws_getContext(ctx->in_width, ctx->in_height, AV_PIX_FMT_YUV420P, ambi->width, ambi->height, AV_PIX_FMT_RGB24, SWS_LANCZOS, NULL, NULL, NULL);
-	avpicture_alloc(&ambi->picture, AV_PIX_FMT_RGB24, ambi->width, ambi->height);
+	ambi->img = new img_format_t(ctx->in_width, ctx->in_height);
 
 	return 1;
 }
@@ -71,27 +60,30 @@ void nyx_ambi_uninit(struct vf_dlopen_context* ctx)
 	ambi_t* ambi = (ambi_t*)ctx->priv;
 
 	delete ambi->hue;
-	avpicture_free(&ambi->picture);
-	sws_freeContext(ambi->sws_ctx);
+	delete ambi->img;
 
 	free(ambi);
+
+#ifdef NYX_USE_OPENCL
+	nyx_cl_uninit();
+#endif /* NYX_USE_OPENCL */
 }
 
 static int nyx_ambi_init_put_image(struct vf_dlopen_context* ctx)
 {
 	ambi_t* ambi = (ambi_t*)ctx->priv;
-	ambi->frame_step++;
 
-	if (ambi->frame_step == 24)
+	NYX_DLOG("\nplanewidth=%d planeheight=%d planestride=%d\n", ctx->inpic.planewidth[0], ctx->inpic.planeheight[0], ctx->inpic.planestride[0]);
+	NYX_DLOG("planewidth=%d planeheight=%d planestride=%d\n", ctx->inpic.planewidth[1], ctx->inpic.planeheight[1], ctx->inpic.planestride[1]);
+	NYX_DLOG("planewidth=%d planeheight=%d planestride=%d\n\n", ctx->inpic.planewidth[2], ctx->inpic.planeheight[2], ctx->inpic.planestride[2]);
+
+	if (++ambi->frame_step == 24)
 	{
-		AVPicture picture = ambi->picture;
-		const uint8_t* data[3] = {ctx->inpic.plane[0], ctx->inpic.plane[1], ctx->inpic.plane[2]};
-		int linesize[3] = {ctx->inpic.planestride[0], ctx->inpic.planestride[1], ctx->inpic.planestride[2]};
-		sws_scale(ambi->sws_ctx, data, linesize, 0, ctx->in_height, picture.data, picture.linesize);
+		uint8_t* rgb = ambi->img->yuv420p_to_rgba(ctx->inpic.plane[0], ctx->inpic.planestride[0], ctx->inpic.plane[1], ctx->inpic.planestride[1], ctx->inpic.plane[2], ctx->inpic.planestride[2], ctx->inpic.planewidth[0], ctx->inpic.planeheight[0]);
 
-		ambi->hue->apply_dominant_color_from_buffer(picture.data[0], ambi->width, ambi->height);
+		ambi->hue->apply_dominant_color_from_buffer(rgb, ctx->in_width, ctx->in_height);
+		free(rgb);
 
-		//save_frame((AVFrame*)&picture, ambi->width, ambi->height, ambi->frame_step);
 		ambi->frame_step = 0;
 	}
 
@@ -139,27 +131,3 @@ int vf_dlopen_getcontext(struct vf_dlopen_context* ctx, int argc __attribute__((
 
 	return 1;
 }
-
-#ifdef DEBUG
-__attribute__((unused)) void save_frame(const AVFrame* frame, const int width, const int height, const int frame_n)
-{
-	FILE* fp = NULL;
-	char filename[4096] = {0x00};
-
-	// Open file
-	sprintf(filename, "/Users/nyxouf/Desktop/_frame%d.ppm", frame_n);
-	fp = fopen(filename, "wb");
-	if (fp == NULL)
-		return;
-
-	// Write header
-	fprintf(fp, "P6\n%d %d\n255\n", width, height);
-
-	// Write pixel data
-	for (int y = 0; y < height; y++)
-		fwrite(frame->data[0] + y * frame->linesize[0], 1, width * 3, fp);
-
-	// Close file
-	fclose(fp);
-}
-#endif

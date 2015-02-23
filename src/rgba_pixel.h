@@ -1,5 +1,5 @@
-#ifndef __NYX_RGB_PIXEL_H__
-#define __NYX_RGB_PIXEL_H__
+#ifndef __NYX_RGBA_PIXEL_H__
+#define __NYX_RGBA_PIXEL_H__
 
 
 #include <functional>
@@ -14,7 +14,7 @@
 #define NYX_SAFE_PIXEL_COMPONENT_VALUE(COLOR) (NYX_CLAMP(COLOR, NYX_MIN_PIXEL_COMPONENT_VALUE, NYX_MAX_PIXEL_COMPONENT_VALUE))
 
 
-struct rgb_pixel_t
+struct rgba_pixel_t
 {
 	/// Red component
 	uint8_t r;
@@ -22,37 +22,46 @@ struct rgb_pixel_t
 	uint8_t g;
 	/// Blue component
 	uint8_t b;
+	/// Alpha component
+	uint8_t a;
 
 	/**
 	 * @brief Default constructor: Initialize a black pixel
 	 */
-	rgb_pixel_t(void);
+	rgba_pixel_t(void);
 
 	/**
 	 * @brief Initialize a pixel
 	 * @param red [in] : red component
 	 * @param green [in] : green component
 	 * @param blue [in] : blue component
+	 * @param alpha [in] : alpha component
 	 */
-	rgb_pixel_t(const uint8_t red, const uint8_t green, const uint8_t blue);
+	rgba_pixel_t(const uint8_t red, const uint8_t green, const uint8_t blue, const uint8_t alpha = NYX_MAX_PIXEL_COMPONENT_VALUE);
 
 	/**
 	 * @brief Create a copy of another pixel
 	 * @param px [in] : Pixel to copy
 	 */
-	rgb_pixel_t(const rgb_pixel_t& px);
+	rgba_pixel_t(const rgba_pixel_t& px);
 
 	/**
-	 * @brief Check if a pixel is black
+	 * @brief Check if a pixel is black ignoring alpha
 	 * @returns true if the pixel is black
 	 */
 	inline bool is_black(void)const {return (r == NYX_MIN_PIXEL_COMPONENT_VALUE && g == NYX_MIN_PIXEL_COMPONENT_VALUE && b == NYX_MIN_PIXEL_COMPONENT_VALUE);}
 
 	/**
-	 * @brief Check if a pixel is white
+	 * @brief Check if a pixel is white ignoring alpha
 	 * @returns true if the pixel is white
 	 */
 	inline bool is_white(void)const {return (r == NYX_MAX_PIXEL_COMPONENT_VALUE && g == NYX_MAX_PIXEL_COMPONENT_VALUE && b == NYX_MAX_PIXEL_COMPONENT_VALUE);}
+
+	/**
+	 * @brief Check if a pixel is transparent
+	 * @returns true if the pixel is transparent
+	 */
+	inline bool is_transparent(void)const {return (a == NYX_MIN_PIXEL_COMPONENT_VALUE);}
 
 	/**
 	 * @brief Check if a pixel is dark
@@ -63,9 +72,9 @@ struct rgb_pixel_t
 	/**
 	 * Operators overloading
 	 */
-	inline bool operator==(const rgb_pixel_t& px)const
+	inline bool operator==(const rgba_pixel_t& px)const
 	{
-		return ((r == px.r) && (g == px.g) && (b == px.b));
+		return ((r == px.r) && (g == px.g) && (b == px.b) && (a == px.a));
 	}
 };
 
@@ -75,11 +84,12 @@ struct rgb_pixel_t
 namespace std
 {
 	template <>
-	struct hash<rgb_pixel_t>
+	struct hash<rgba_pixel_t>
 	{
-		inline size_t operator()(const rgb_pixel_t& px)const
+		inline size_t operator()(const rgba_pixel_t& px)const
 		{
-			return (size_t(px.r << 16) | size_t(px.g << 8) | size_t(px.b));
+			return size_t((px.a << 24) + (px.b << 16) + (px.g << 8) + px.r);
+			//return (size_t(px.r << 16) | size_t(px.g << 8) | size_t(px.b));
 		}
 	};
 }
@@ -90,4 +100,4 @@ namespace std
  */
 extern double __normalized_component_values[256];
 
-#endif /* __NYX_RGB_PIXEL_H__ */
+#endif /* __NYX_RGBA_PIXEL_H__ */

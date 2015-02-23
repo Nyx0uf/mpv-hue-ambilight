@@ -23,4 +23,13 @@
 /* Not a Number check */
 #define NYX_IS_NAN(NUM) (((double)NUM) != ((double)NUM))
 
+
+/* Use FFMPEG by default */
+//#define NYX_USE_FFMPEG 1
+
+//#ifndef NYX_USE_FFMPEG
+/* Use OpenCL */
+//#define NYX_USE_OPENCL 1
+//#endif /* NYX_USE_FFMPEG */
+
 #endif /* __NYX_GLOBAL_H__ */

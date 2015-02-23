@@ -1,6 +1,6 @@
 #include "hue_controller.h"
 #include "global.h"
-#include "rgb_pixel.h"
+#include "rgba_pixel.h"
 #include "point.h"
 #include "hue_client.h"
 #include <cmath>
@@ -15,7 +15,7 @@
 #define DEFAULT_TRANSITION_TIME 5
 
 
-typedef std::pair<rgb_pixel_t, int> counted_pixel_t;
+typedef std::pair<rgba_pixel_t, int> counted_pixel_t;
 typedef std::vector<counted_pixel_t> counted_pixel_vector_t;
 
 
@@ -34,12 +34,12 @@ hue_controller_t::~hue_controller_t(void)
 
 void hue_controller_t::apply_dominant_color_from_buffer(const uint8_t* buffer, const size_t width, const size_t height)const
 {
-	rgb_pixel_t* pixels = (rgb_pixel_t*)buffer;
+	rgba_pixel_t* pixels = (rgba_pixel_t*)buffer;
 	// left edge (8px range)
-	std::unordered_multiset<rgb_pixel_t> left_edge_colors;
+	std::unordered_multiset<rgba_pixel_t> left_edge_colors;
 	this->get_left_edge(pixels, width, height, left_edge_colors, 8);
 	// right edge (8px range)
-	std::unordered_multiset<rgb_pixel_t> right_edge_colors;
+	std::unordered_multiset<rgba_pixel_t> right_edge_colors;
 	this->get_right_edge(pixels, width, height, right_edge_colors, 8);
 
 	// Assuming:
@@ -51,7 +51,7 @@ void hue_controller_t::apply_dominant_color_from_buffer(const uint8_t* buffer, c
 	this->apply_color_to_lamp(right_edge_colors, random_colors_threshold, 1);
 }
 
-void hue_controller_t::get_left_edge(rgb_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgb_pixel_t>& edge, const size_t col)const
+void hue_controller_t::get_left_edge(rgba_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgba_pixel_t>& edge, const size_t col)const
 {
 	const size_t size = height * width;
 	for (size_t y = 0; y < size; y += width)
@@ -63,7 +63,7 @@ void hue_controller_t::get_left_edge(rgb_pixel_t* pixels, const size_t width, co
 	}
 }
 
-void hue_controller_t::get_right_edge(rgb_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgb_pixel_t>& edge, const size_t col)const
+void hue_controller_t::get_right_edge(rgba_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgba_pixel_t>& edge, const size_t col)const
 {
 	const size_t size = height * width;
 	for (size_t y = (width - 1); y < size; y += width)
@@ -75,7 +75,7 @@ void hue_controller_t::get_right_edge(rgb_pixel_t* pixels, const size_t width, c
 	}
 }
 
-void hue_controller_t::apply_color_to_lamp(std::unordered_multiset<rgb_pixel_t>& edge, const int random_colors_threshold, const int lamp_n)const
+void hue_controller_t::apply_color_to_lamp(std::unordered_multiset<rgba_pixel_t>& edge, const int random_colors_threshold, const int lamp_n)const
 {
 	counted_pixel_vector_t colors;
 	for (auto cur_color : edge)
@@ -100,7 +100,7 @@ void hue_controller_t::apply_color_to_lamp(std::unordered_multiset<rgb_pixel_t>&
 			return (i1.second > i2.second);
 		});
 		counted_pixel_t cpx = colors[0];
-		rgb_pixel_t px = cpx.first;
+		rgba_pixel_t px = cpx.first;
 		//NYX_DLOG("DARK : %d\n", px.is_dark());
 
 		char json[512] = {0x00};
@@ -126,7 +126,7 @@ void hue_controller_t::apply_color_to_lamp(std::unordered_multiset<rgb_pixel_t>&
 	}
 }
 
-point_t hue_controller_t::calculate_XY_from_RGB_and_model(const rgb_pixel_t* px, const HUE_LAMP_MODEL model)
+point_t hue_controller_t::calculate_XY_from_RGB_and_model(const rgba_pixel_t* px, const HUE_LAMP_MODEL model)
 {
 	// Normalize
 	const double red = __normalized_component_values[px->r];

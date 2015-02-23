@@ -1,4 +1,4 @@
-#include "rgb_pixel.h"
+#include "rgba_pixel.h"
 
 
 double __normalized_component_values[256] = {
@@ -260,28 +260,31 @@ double __normalized_component_values[256] = {
 1.0};
 
 
-rgb_pixel_t::rgb_pixel_t(void)
+rgba_pixel_t::rgba_pixel_t(void)
 {
 	r = NYX_MIN_PIXEL_COMPONENT_VALUE;
 	g = NYX_MIN_PIXEL_COMPONENT_VALUE;
 	b = NYX_MIN_PIXEL_COMPONENT_VALUE;
+	a = NYX_MAX_PIXEL_COMPONENT_VALUE;
 }
 
-rgb_pixel_t::rgb_pixel_t(const uint8_t red, const uint8_t green, const uint8_t blue)
+rgba_pixel_t::rgba_pixel_t(const uint8_t red, const uint8_t green, const uint8_t blue, const uint8_t alpha)
 {
 	r = red;
 	g = green;
 	b = blue;
+	a = alpha;
 }
 
-rgb_pixel_t::rgb_pixel_t(const rgb_pixel_t& px)
+rgba_pixel_t::rgba_pixel_t(const rgba_pixel_t& px)
 {
 	this->r = px.r;
 	this->g = px.g;
 	this->b = px.b;
+	this->a = px.a;
 }
 
-bool rgb_pixel_t::is_dark(void)const
+bool rgba_pixel_t::is_dark(void)const
 {
 	const double lum = 0.2126 * __normalized_component_values[r] + 0.7152 * __normalized_component_values[g] + 0.0722 * __normalized_component_values[b];
 	return (lum < 0.33);

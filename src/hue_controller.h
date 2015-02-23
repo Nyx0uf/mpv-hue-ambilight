@@ -4,7 +4,7 @@
 
 #include <unordered_set>
 #include <cstdlib>
-struct rgb_pixel_t;
+struct rgba_pixel_t;
 struct point_t;
 
 
@@ -41,7 +41,7 @@ public:
 	hue_controller_t(const char* hue_ip, const uint8_t n_lamp);
 
 	/**
-	 * @brief Destructor
+	 * @brief Destructor, free IP buffer
 	 */
 	~hue_controller_t(void);
 
@@ -57,16 +57,15 @@ public:
 	 * Taken and adapted from Philips Hue SDK
 	 * https://github.com/PhilipsHue/PhilipsHueSDK-iOS-OSX/blob/master/ApplicationDesignNotes/RGB%20to%20xy%20Color%20conversion.md
 	 */
-	static point_t calculate_XY_from_RGB_and_model(const rgb_pixel_t* px, const HUE_LAMP_MODEL model);
+	static point_t calculate_XY_from_RGB_and_model(const rgba_pixel_t* px, const HUE_LAMP_MODEL model);
 	static point_t* color_points_for_model(const HUE_LAMP_MODEL model);
 	static point_t get_closest_point_to_points(const point_t& pta, const point_t& ptb, const point_t& ptp);
 	static bool check_point_in_lamps_reach_with_color_points(const point_t& pt, const point_t* color_points);
 
 private:
-	void get_left_edge(rgb_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgb_pixel_t>& edge, const size_t col)const;
-	void get_right_edge(rgb_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgb_pixel_t>& edge, const size_t col)const;
-	void apply_color_to_lamp(std::unordered_multiset<rgb_pixel_t>& edge, const int random_colors_threshold, const int lamp_n)const;
+	void get_left_edge(rgba_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgba_pixel_t>& edge, const size_t col)const;
+	void get_right_edge(rgba_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgba_pixel_t>& edge, const size_t col)const;
+	void apply_color_to_lamp(std::unordered_multiset<rgba_pixel_t>& edge, const int random_colors_threshold, const int lamp_n)const;
 };
-
 
 #endif /* __NYX_HUE_CONTROLLER_H__ */
