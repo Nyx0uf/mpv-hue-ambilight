@@ -131,7 +131,7 @@ uint8_t* img_format_t::yuv420p_to_rgba(const uint8_t* y, const size_t stride_y, 
 	uint8_t* rgba = _yuv420p_to_rgba(y, u, v, width, height, stride_y);
 #endif /* NYX_USE_OPENCL */
 #endif /* NYX_USE_FFMPEG*/
-	//_write_tga("/Users/nyxouf/Desktop/_bla.tga", rgba, width, height);
+	//write_tga("/Users/nyxouf/Desktop/_bla.tga", rgba, width, height);
 	return rgba;
 }
 
@@ -311,7 +311,7 @@ uint8_t* img_format_t::_yuv420p_to_rgba_ffmpeg(const uint8_t* y, const size_t st
 }
 #endif /* NYX_USE_FFMPEG */
 
-bool img_format_t::_write_tga(const char* filepath, const uint8_t* buf, const size_t width, const size_t height)
+bool img_format_t::write_tga(const char* filepath, const uint8_t* buf, const size_t width, const size_t height)
 {
 	if (!buf)
 		return false;

@@ -119,6 +119,7 @@ private:
 	uint8_t* _yuv420p_to_rgba_ffmpeg(const uint8_t* y, const size_t stride_y, const uint8_t* u, const size_t stride_u, const uint8_t* v, const size_t stride_v, const size_t width, const size_t height);
 #endif /* NYX_USE_FFMPEG */
 
+public:
 	/**
 	 * @brief Write a RGBA buffer to a TGA file
 	 * @param filepath [in] : path where to save the file
@@ -127,7 +128,7 @@ private:
 	 * @param height [in] : image height
 	 * @returns true if all OK.
 	 */
-	static bool _write_tga(const char* filepath, const uint8_t* buf, const size_t width, const size_t height);
+	static bool write_tga(const char* filepath, const uint8_t* buf, const size_t width, const size_t height);
 };
 
 #endif /* __NYX_IMG_FORMATS_H__ */
