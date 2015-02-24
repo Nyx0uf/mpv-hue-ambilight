@@ -5,7 +5,7 @@ This is a plugin for [mpv](https://github.com/mpv-player/mpv "mpv on github") to
 
 It is written in *C++11*, why ? because I needed some handy containers like unordered sets.
 
-The algorithm is trivial (dumb, even) and could surely be improved. The color is computed from the 8 columns of pixels on the left and right edge.
+The algorithm is trivial (dumb, even) and could surely be improved. The color for left and right lamp is computed from the 4 columns of pixels on the left and right edge of the frame and for the middle a square of 64x64 at the center of the frame.
 
 You need ffmpeg to be installed, but that's not a problem since you already use mpv.
 
@@ -29,6 +29,7 @@ Then, simply invoke mpv with `--vf=dlopen=ambi.dylib:HUE_IP_ADDRESS` for example
 - Too slow for my taste (handle 1080p in my tests)
 - Won't build on Windows, but I don't care.
 - Too many things hardcoded?
+- Kinda hang when there's too much of a single color (black border for ex), need to bench things sometime
 
 
 ### License
