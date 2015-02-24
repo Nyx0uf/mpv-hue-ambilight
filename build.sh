@@ -4,7 +4,7 @@ LIBNAME="ambi"
 FLAGS=""
 LIBS=""
 FILES="src/ambi.cpp src/rgba_pixel.cpp src/point.cpp src/hue_client.cpp src/filterutils.cpp src/hue_controller.cpp src/img_formats.cpp"
-USE_FFMPEG="0"
+USE_FFMPEG="1"
 USE_OPENCL="1"
 
 if [ "$USE_FFMPEG" == "1" ]; then
