@@ -1,8 +1,8 @@
 #include "hue_controller.h"
-#include "global.h"
 #include "rgba_pixel.h"
 #include "point.h"
 #include "hue_client.h"
+#include "img_formats.h"
 #include <cmath>
 #include <unordered_set>
 #include <vector>
@@ -12,7 +12,7 @@
 #define COLOR_THRESHOLD_MIN_PERCENTAGE 0.005
 #define DEFAULT_SATURATION_VALUE 255
 #define DEFAULT_BRIGHTNESS_VALUE 32
-#define DEFAULT_TRANSITION_TIME 5
+#define DEFAULT_TRANSITION_TIME 4
 
 
 typedef std::pair<rgba_pixel_t, int> counted_pixel_t;
@@ -35,42 +35,56 @@ hue_controller_t::~hue_controller_t(void)
 void hue_controller_t::apply_dominant_color_from_buffer(const uint8_t* buffer, const size_t width, const size_t height)const
 {
 	rgba_pixel_t* pixels = (rgba_pixel_t*)buffer;
-	// left edge (8px range)
+
+	// Right edge / left edge (4px range)
 	std::unordered_multiset<rgba_pixel_t> left_edge_colors;
-	this->get_left_edge(pixels, width, height, left_edge_colors, 8);
-	// right edge (8px range)
 	std::unordered_multiset<rgba_pixel_t> right_edge_colors;
-	this->get_right_edge(pixels, width, height, right_edge_colors, 8);
+	this->get_edges(pixels, width, height, left_edge_colors, right_edge_colors, 4);
+
+	// Middle
+	std::unordered_multiset<rgba_pixel_t> middle_colors;
+	this->get_middle(pixels, width, height, middle_colors, 64);
 
 	// Assuming:
 	// lamp 1 on the right
 	// lamp 2 on the left
 	// lamp 3 at the center
 	const int random_colors_threshold = (int)(height * COLOR_THRESHOLD_MIN_PERCENTAGE);
-	this->apply_color_to_lamp(left_edge_colors, random_colors_threshold, 2);
 	this->apply_color_to_lamp(right_edge_colors, random_colors_threshold, 1);
+	this->apply_color_to_lamp(left_edge_colors, random_colors_threshold, 2);
+	this->apply_color_to_lamp(middle_colors, random_colors_threshold, 3);
 }
 
-void hue_controller_t::get_left_edge(rgba_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgba_pixel_t>& edge, const size_t col)const
+void hue_controller_t::get_edges(rgba_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgba_pixel_t>& left_edge, std::unordered_multiset<rgba_pixel_t>& right_edge, const size_t col)const
 {
 	const size_t size = height * width;
+	const size_t step = width - 1;
+	size_t z = 0;
 	for (size_t y = 0; y < size; y += width)
 	{
-		for (size_t w = 0; w < col; ++w)
+		z = y + step;
+		for (size_t x = 0; x < col; ++x)
 		{
-			edge.insert(pixels[y + w]);
+			left_edge.insert(pixels[y + x]);
+			right_edge.insert(pixels[z - x]);
 		}
 	}
 }
 
-void hue_controller_t::get_right_edge(rgba_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgba_pixel_t>& edge, const size_t col)const
+void hue_controller_t::get_middle(rgba_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgba_pixel_t>& middle, const size_t wh)const
 {
-	const size_t size = height * width;
-	for (size_t y = (width - 1); y < size; y += width)
+	// Select a square at the center of the frame (same algo as cropping)
+	const size_t ox = (width / 2) - (wh / 2);
+	const size_t oy = (height / 2) - (wh / 2);
+	const size_t mx = ox + wh;
+	const size_t my = oy + wh;
+	size_t index = 0;
+	for (size_t y = oy; y < my; y++)
 	{
-		for (size_t w = 0; w < col; ++w)
+		for (size_t x = ox; x < mx; x++)
 		{
-			edge.insert(pixels[y - w]);
+			index = x + y * width;
+			middle.insert(pixels[index]);
 		}
 	}
 }
@@ -143,7 +157,7 @@ point_t hue_controller_t::calculate_XY_from_RGB_and_model(const rgba_pixel_t* px
 	const double y = r * 0.234327 + g * 0.743075 + b * 0.022598;
 	const double z = r * 0.0000000 + g * 0.053077 + b * 1.035763;
 
-	const double xyz = (x + y + z);
+	const double xyz = x + y + z;
 	double cx = x / xyz;
 	double cy = y / xyz;
 

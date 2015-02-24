@@ -63,8 +63,8 @@ public:
 	static bool check_point_in_lamps_reach_with_color_points(const point_t& pt, const point_t* color_points);
 
 private:
-	void get_left_edge(rgba_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgba_pixel_t>& edge, const size_t col)const;
-	void get_right_edge(rgba_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgba_pixel_t>& edge, const size_t col)const;
+	void get_edges(rgba_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgba_pixel_t>& left_edge, std::unordered_multiset<rgba_pixel_t>& right_edge, const size_t col)const;
+	void get_middle(rgba_pixel_t* pixels, const size_t width, const size_t height, std::unordered_multiset<rgba_pixel_t>& middle, const size_t wh)const;
 	void apply_color_to_lamp(std::unordered_multiset<rgba_pixel_t>& edge, const int random_colors_threshold, const int lamp_n)const;
 };
 
