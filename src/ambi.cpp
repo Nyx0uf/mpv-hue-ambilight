@@ -73,16 +73,16 @@ static int nyx_ambi_init_put_image(struct vf_dlopen_context* ctx)
 {
 	ambi_t* ambi = (ambi_t*)ctx->priv;
 
-	NYX_DLOG("\nplanewidth=%d planeheight=%d planestride=%d\n", ctx->inpic.planewidth[0], ctx->inpic.planeheight[0], ctx->inpic.planestride[0]);
-	NYX_DLOG("planewidth=%d planeheight=%d planestride=%d\n", ctx->inpic.planewidth[1], ctx->inpic.planeheight[1], ctx->inpic.planestride[1]);
-	NYX_DLOG("planewidth=%d planeheight=%d planestride=%d\n\n", ctx->inpic.planewidth[2], ctx->inpic.planeheight[2], ctx->inpic.planestride[2]);
+	//NYX_DLOG("\nplanewidth=%d planeheight=%d planestride=%d\n", ctx->inpic.planewidth[0], ctx->inpic.planeheight[0], ctx->inpic.planestride[0]);
+	//NYX_DLOG("planewidth=%d planeheight=%d planestride=%d\n", ctx->inpic.planewidth[1], ctx->inpic.planeheight[1], ctx->inpic.planestride[1]);
+	//NYX_DLOG("planewidth=%d planeheight=%d planestride=%d\n\n", ctx->inpic.planewidth[2], ctx->inpic.planeheight[2], ctx->inpic.planestride[2]);
 
 	if (++ambi->frame_step == 24)
 	{
-		uint8_t* rgb = ambi->img->yuv420p_to_rgba(ctx->inpic.plane[0], ctx->inpic.planestride[0], ctx->inpic.plane[1], ctx->inpic.planestride[1], ctx->inpic.plane[2], ctx->inpic.planestride[2], ctx->inpic.planewidth[0], ctx->inpic.planeheight[0]);
+		uint8_t* rgba = ambi->img->yuv420p_to_rgba(ctx->inpic.plane[0], ctx->inpic.planestride[0], ctx->inpic.plane[1], ctx->inpic.planestride[1], ctx->inpic.plane[2], ctx->inpic.planestride[2], ctx->inpic.planewidth[0], ctx->inpic.planeheight[0]);
 
-		ambi->hue->apply_dominant_color_from_buffer(rgb, ctx->in_width, ctx->in_height);
-		free(rgb);
+		ambi->hue->apply_dominant_color_from_buffer(rgba, ctx->in_width, ctx->in_height);
+		free(rgba);
 
 		ambi->frame_step = 0;
 	}
@@ -103,7 +103,7 @@ static int nyx_ambi_init_put_image(struct vf_dlopen_context* ctx)
 --vf=dlopen=ambi.dylib:HUE_IP:NUMBER_OF_LAMPS
 1: IP of the Hue bridge
 */
-int vf_dlopen_getcontext(struct vf_dlopen_context* ctx, int argc __attribute__((unused)), const char** argv __attribute__((unused)))
+int vf_dlopen_getcontext(struct vf_dlopen_context* ctx, int argc, const char** argv)
 {
 	VF_DLOPEN_CHECK_VERSION(ctx);
 
