@@ -89,7 +89,6 @@ namespace std
 		inline size_t operator()(const rgba_pixel_t& px)const
 		{
 			return size_t((px.a << 24) + (px.b << 16) + (px.g << 8) + px.r);
-			//return (size_t(px.r << 16) | size_t(px.g << 8) | size_t(px.b));
 		}
 	};
 }
