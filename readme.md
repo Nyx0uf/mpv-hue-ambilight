@@ -1,5 +1,7 @@
 This is a plugin for [mpv](https://github.com/mpv-player/mpv "mpv on github") to interract with [Philips Hue](http://www2.meethue.com/en-US/ "Hue website") lamps and try to mimic an ambilight setup.
 
+There're some examples videos at the bottom of the [following page](http://cocoaintheshell.com/2015/02/mpv-philips-hue-ambilight/ "Philips Hue + mpv = Ambilight").
+
 
 ### Technical
 
@@ -29,7 +31,6 @@ Then, simply invoke mpv with `--vf=dlopen=ambi.dylib:HUE_IP_ADDRESS` for example
 - Too slow for my taste (handle 1080p in my tests)
 - Won't build on Windows, but I don't care.
 - Too many things hardcoded?
-- Kinda hang when there's too much of a single color (black border for ex), need to bench things sometime
 
 
 ### License
