@@ -21,16 +21,11 @@ typedef std::vector<counted_pixel_t> counted_pixel_vector_t;
 
 hue_controller_t::hue_controller_t(const char* hue_ip, const uint8_t n_lamp)
 {
-	const size_t len = strlen(hue_ip);
-	this->_hue_ip = (char*)calloc(len + 1, sizeof(char));
-	memcpy(this->_hue_ip, hue_ip, len);
+	this->_hue_ip = std::string(hue_ip);
 	this->_number_lamps = n_lamp;
 }
 
-hue_controller_t::~hue_controller_t(void)
-{
-	free(this->_hue_ip);
-}
+hue_controller_t::~hue_controller_t(void) {}
 
 void hue_controller_t::apply_dominant_color_from_buffer(const uint8_t* buffer, const size_t width, const size_t height)const
 {
@@ -117,20 +112,20 @@ void hue_controller_t::apply_color_to_lamp(std::unordered_multiset<rgba_pixel_t>
 		rgba_pixel_t px = cpx.first;
 		//NYX_DLOG("DARK : %d\n", px.is_dark());
 
-		char json[512] = {0x00};
+		char json[256] = {0x00};
 		if (px.is_black())
 		{
 			NYX_DLOG("[+] Dark color.\n");
 
-			sprintf(json, "{\"on\":true, \"transitiontime\":%d, \"sat\":%d, \"bri\":%d, \"xy\":[0.35,0.35]}", DEFAULT_TRANSITION_TIME, DEFAULT_SATURATION_VALUE, DEFAULT_BRIGHTNESS_VALUE); // Kinda white
+			snprintf(json, 256, "{\"on\":true, \"transitiontime\":%d, \"sat\":%d, \"bri\":%d, \"xy\":[0.35,0.35]}", DEFAULT_TRANSITION_TIME, DEFAULT_SATURATION_VALUE, DEFAULT_BRIGHTNESS_VALUE); // Kinda white
 			hue.send_command(json, lamp_n);
 		}
 		else
 		{
-			const point_t p = calculate_XY_from_RGB_and_model(&px, HUE_LAMP_MODEL::LCT001);
-			NYX_DLOG("r=%d g=%d b=%d (%d) | x=%f y=%f\n", px.r, px.g, px.b, cpx.second, p.x, p.y);
+			const point_t pt = calculate_XY_from_RGB_and_model(&px, HUE_LAMP_MODEL::LCT001);
+			NYX_DLOG("r=%d g=%d b=%d (%d) | x=%f y=%f\n", px.r, px.g, px.b, cpx.second, pt.x, pt.y);
 
-			sprintf(json, "{\"on\":true, \"transitiontime\":%d, \"sat\":%d, \"bri\":%d, \"xy\":[%f,%f]}", DEFAULT_TRANSITION_TIME, DEFAULT_SATURATION_VALUE, DEFAULT_BRIGHTNESS_VALUE, p.x, p.y);
+			snprintf(json, 256, "{\"on\":true, \"transitiontime\":%d, \"sat\":%d, \"bri\":%d, \"xy\":[%f,%f]}", DEFAULT_TRANSITION_TIME, DEFAULT_SATURATION_VALUE, DEFAULT_BRIGHTNESS_VALUE, pt.x, pt.y);
 			hue.send_command(json, lamp_n);
 		}
 	}

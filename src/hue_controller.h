@@ -4,6 +4,7 @@
 
 #include <unordered_set>
 #include <cstdlib>
+#include <string>
 struct rgba_pixel_t;
 struct point_t;
 
@@ -28,7 +29,7 @@ class hue_controller_t
 {
 private:
 	/// Philips Hue IP
-	char* _hue_ip;
+	std::string _hue_ip;
 	/// Number of lamps
 	uint8_t _number_lamps;
 

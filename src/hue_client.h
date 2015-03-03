@@ -2,11 +2,14 @@
 #define __NYX_HUE_CLIENT_H__
 
 
+#include <string>
+
+
 class hue_client_t
 {
 private:
 	/// Philips Hue IP
-	char* _ip;
+	std::string _ip;
 	/// Socket
 	int _socket;
 
@@ -15,7 +18,7 @@ public:
 	 * @brief Initialize hue client
 	 * @param ip [in] : Philips hue bridge IP
 	 */
-	hue_client_t(const char* ip);
+	hue_client_t(const std::string& ip);
 
 	/**
 	 * @brief Destructor, close socket and free ip
