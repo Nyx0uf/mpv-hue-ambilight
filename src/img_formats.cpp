@@ -2,7 +2,9 @@
 #include "rgba_pixel.h"
 
 
+#ifdef DEBUG
 #define NYX_BENCH 1
+#endif /* DEBUG */
 
 
 #ifdef NYX_USE_OPENCL
