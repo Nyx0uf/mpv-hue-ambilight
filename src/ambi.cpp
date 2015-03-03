@@ -79,12 +79,14 @@ static int nyx_ambi_init_put_image(struct vf_dlopen_context* ctx)
 
 	if (++ambi->frame_step == 24)
 	{
-		uint8_t* rgba = ambi->img->yuv420p_to_rgba(ctx->inpic.plane[0], ctx->inpic.planestride[0], ctx->inpic.plane[1], ctx->inpic.planestride[1], ctx->inpic.plane[2], ctx->inpic.planestride[2], ctx->inpic.planewidth[0], ctx->inpic.planeheight[0]);
-
-		ambi->hue->apply_dominant_color_from_buffer(rgba, ctx->in_width, ctx->in_height);
-		free(rgba);
-
 		ambi->frame_step = 0;
+
+		uint8_t* rgba = ambi->img->yuv420p_to_rgba(ctx->inpic.plane[0], ctx->inpic.planestride[0], ctx->inpic.plane[1], ctx->inpic.planestride[1], ctx->inpic.plane[2], ctx->inpic.planestride[2], ctx->inpic.planewidth[0], ctx->inpic.planeheight[0]);
+		if (rgba)
+		{
+			ambi->hue->apply_dominant_color_from_buffer(rgba, ctx->in_width, ctx->in_height);
+			free(rgba);
+		}
 	}
 
 	// Copy input -> output
