@@ -110,7 +110,6 @@ void hue_controller_t::apply_color_to_lamp(std::unordered_multiset<rgba_pixel_t>
 		});
 		counted_pixel_t cpx = colors[0];
 		rgba_pixel_t px = cpx.first;
-		//NYX_DLOG("DARK : %d\n", px.is_dark());
 
 		char json[256] = {0x00};
 		if (px.is_black())
